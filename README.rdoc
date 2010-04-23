@@ -7,7 +7,7 @@ cod2control - Web GUI for controling CoD2 server remotely
 
 = TODO
 
- * web service (Ruby)
- * GUI control panel (PHP or Rails)
- * RCON support
- * DB users and log management
+* web service (Ruby)
+* GUI control panel (PHP or Rails)
+* RCON support
+* DB users and log management
