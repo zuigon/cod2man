@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# `control`
+# ! Mora biti u folderu servera, zajedno sa vars.txt i 
+
+. vars.txt 2>&1 > /dev/null || exit 1
+# sve varijable
+
+SCREEN_NAME="cod2-`pwd | sed 's/^.*\///g'`"
+
+
+cod2pid() {
+	screen -wipe > /dev/null
+	COD2=`screen -list | grep $SCREEN_NAME | cut -d"." -f 1`
+}
+
+start() {
+	if [ $COD2 ]; then
+		echo "COD2 server is already running with PID ${COD2}"
+		exit 1
+	else
+		echo "Starting COD2 server."
+		~/cod2/start
+		sleep 2
+		cod2pid
+		echo "COD2 has started with PID of ${COD2}"
+	fi
+}
+
+stop() {
+	if [ $COD2 ]; then
+		echo "Stop COD2 server with PID ${COD2}"
+		kill -9 $COD2
+	else
+		echo "COD2 Server is not running!!"
+	fi
+}
+
+status() {
+	if [ $COD2 ]; then
+		echo "COD2 server is running with PID of ${COD2}"
+	else
+		echo "COD2 Server is not running!!"
+	fi
+}
+
+
+case "$1" in
+	start)
+	cod2pid
+	start
+;;
+	stop)
+	cod2pid
+	stop
+;;
+	restart)
+	cod2pid
+	stop
+	COD2=""
+	start
+;;
+	status)
+	cod2pid
+	status
+	RETVAL=$?
+;;
+	*)
+	echo $"Usage: $0 {start|stop|restart|status}"
+	exit 1
+esac
+
+exit
+

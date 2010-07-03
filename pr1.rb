@@ -18,6 +18,11 @@ def status
 end
 
 
+def start
+#  `cd #{dir} && ./#{exename}`
+end
+
+
 #def reboot
 #end
 

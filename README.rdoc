@@ -3,11 +3,8 @@
 Copyright:: (c) 2010 BKrsta
 License::   MIT License
 
-cod2control - Web GUI for controling CoD2 server remotely
+* cod2man - Tools for creating and controling CoD2 server from CLI/remotely (via Web GUI, Telnet)
 
 = TODO
 
-* web service (Ruby)
-* GUI control panel (PHP or Rails)
-* RCON support
-* DB users and log management
+* vidi: create.rb
