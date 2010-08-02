@@ -6,7 +6,6 @@
 
 require 'optparse'
 require 'erb'
-# require 'erubis'
 
 options = {}
 name = nil
@@ -218,7 +217,7 @@ cfg = template.result(
 )
 
 info "Generiram dedicated.cfg"
-File.open("#{name}/dedicated.cfg", 'w') do |f|
+File.open("#{name}/main/dedicated.cfg", 'w') do |f|
   f.puts cfg
 end
 
