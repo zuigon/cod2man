@@ -1,6 +1,8 @@
 
 //
 $SHORTNAME je  `pwd | sed 's/^.*\///g'`  i potreban je u varijabli samo na pocetku, kasnije se generira ovako
+	== USERNAME
+	- uniq.
 //
 
 # interface od CLI/WEB alata:
@@ -13,20 +15,23 @@ $SHORTNAME je  `pwd | sed 's/^.*\///g'`  i potreban je u varijabli samo na pocet
     (param. je file u /tmp koju generira Web interface ili CLI tool,
     oblika SHELL skripte sa varijablama potrebnim za konfiguraciju
     dedicated.cfg-a i control skripte za paljenje/gasenje servera)
+- cita varijable (sa \! su obavezne); zapisuje u #{name}/vars.txt
+RUNUSER - kojim control vrti server # default 'bkrsta'
+! ADMIN_NAME (user)
+ADMIN_EMAIL (user)
+! SERVER_NAME='Test server 1' (user)
+! SERVER_PORT=289(\d\d)   # ako se ne navede? generiraj novi port, iz pool-a (ports.txt), datoteke u hosting;
+                          # ako je naveden i slobodan, dodaj u pool (ports.txt) sa SHORTNAME-om
+! SERVER_RCON (user)  # ili generiraj: SHORTNAME+/[0-9]{3,4}/
+- nakon toga forkaj:
+	- pokreni ./configure unutar #{name}
+	# vrati PID pokrenutog configure-a
 
 
 # configurator unutar novog server foldera (configure.sh):
 = bash skripta, uzima PARAMETRE (ARGV[0] -> 'vars.txt')
 = koristi `erb`, on uzima env varijable
-- cita varijable: (sa \! su obavezne)
-RUNUSER - kojim control vrti server # default 'bkrsta'
-! ADMIN_NAME (user)
-ADMIN_EMAIL (user)
-#SHORTNAME=test1 (ja, kod odobravanja, rucno)
-! SERVER_NAME='Test server 1' (user)
-! SERVER_PORT=289(\d\d)   # ako se ne navede? generiraj novi port, iz pool-a (ports.txt), datoteke u hosting;
-                          # ako je naveden i slobodan, dodaj u pool (ports.txt) sa SHORTNAME-om
-! SERVER_RCON (user)  # ili generiraj: SHORTNAME+/\d\d\d\d/ i upozori da se promijeni
+
 
 
 # control, za daemon:
