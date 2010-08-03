@@ -221,6 +221,8 @@ File.open("#{name}/main/dedicated.cfg", 'w') do |f|
   f.puts cfg
 end
 
+# potvrda autenticnosti servera
+File.open("#{name}/.cod2server", 'a').close
 
 puts ":: Server je konfiguriran! ::"
 puts " - moze se pokrenuti sa `control start`"
