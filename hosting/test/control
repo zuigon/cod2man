@@ -3,11 +3,18 @@
 # `control`
 # ! Mora biti u folderu servera, zajedno sa vars.txt i 
 
+if [ -e $1/.cod2server ]; then
+	cd $1
+else
+	echo "pwd nije cod2 server !"
+	exit
+fi
+
 . vars.txt 2>&1 > /dev/null || exit 1
 # sve varijable
 
-SCREEN_NAME="cod2-`pwd | sed 's/^.*\///g'`"
-
+# SCREEN_NAME="cod2hosting-`pwd | sed 's/^.*\///g'`"
+SCREEN_NAME=cod2hosting-$1
 
 cod2pid() {
 	screen -wipe > /dev/null
@@ -20,7 +27,8 @@ start() {
 		exit 1
 	else
 		echo "Starting COD2 server."
-		~/cod2/start
+		# ~/cod2/start
+		screen -A -m -d -c .screenrc -S $SCREEN_NAME -t cod2hosting ./cod2_exe
 		sleep 2
 		cod2pid
 		echo "COD2 has started with PID of ${COD2}"
@@ -45,7 +53,7 @@ status() {
 }
 
 
-case "$1" in
+case "$2" in
 	start)
 	cod2pid
 	start
@@ -69,6 +77,8 @@ case "$1" in
 	echo $"Usage: $0 {start|stop|restart|status}"
 	exit 1
 esac
+
+cd - 2>&1 > /dev/null
 
 exit
 
