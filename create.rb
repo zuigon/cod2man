@@ -16,9 +16,12 @@ optparse = OptionParser.new do |opts|
 
   options[:verbose] = false
   options[:run_as] = nil
+  options[:name] = nil
+  options[:owner] = nil
 
   opts.on( '-v', '--verbose', 'Output more information' ) do options[:verbose] = true end
   opts.on( '-n', '--ime IME', 'Ime foldera za inst. (shortname)' ) do |s| options[:name] = s end
+  opts.on( '-o', '--owner USERNAME', 'Owner username' ) do |s| options[:owner] = s end
   opts.on( '-t', '--template DIR', '' ) do |dir| options[:template_dir] = dir end
   # opts.on( '-u', '--runas USER', '' ) do |user| options[:run_as] = user end
   # TODO: vars.txt opcije citati kroz options[]; umjesto addvar, ovdje
@@ -113,6 +116,8 @@ def err(msg)  puts "ERR: #{msg}"; exit end
 dir = `pwd | sed 's/.*\\///g'`.chop
 
 err "Ime sadrzi nedopustene znakove!" if name =~ /[^a-z0-9]/ or name =~ /[\.\/\\]/
+
+err "Trenutni dir nije hosting dir!" if !File.exist? "./cod2hosting"
 # warn "vars.txt datoteka vec postoji i bit ce obrisana!" if File.exists? "./#{name}/vars.txt"
 err "server/folder imena '#{name}' vec postoji!" if File.directory? name
 err "Ime je prekratko!" if name.length < 3
@@ -121,12 +126,12 @@ err "Nema template-a!" unless File.directory? 'template' or File.exists? 'templa
 (template_dir = true if File.directory? 'template') if template_dir.nil?
 
 if template_dir
-  info "creating new server (#{name}) from template ..."
-  cmd = "cp -r template/ #{name}"
+  info "creating new server (#{options[:owner]}-#{name}) from template ..."
+  cmd = "cp -r template/ #{options[:owner]}-#{name}"
   if system cmd
     if File.directory? name
       info "Gotovo!"
-    else err "nema foldera #{name}!" end
+    else err "nema foldera #{options[:owner]}-#{name}!" end
   else
     err "greska kod izvrsavanja '#{cmd}'"
   end
@@ -189,7 +194,7 @@ addvar "admin_email", "Admin eMail"
 addvar "server_name", "Server name"
 addvar "server_port", "Server port"
 randbroj = 10000+rand(99999-10000)
-addvar "server_rcon", "RCON password", "#{name}#{randbroj}"
+addvar "server_rcon", "RCON password", "#{options[:owner]}-#{name}#{randbroj}"
 addvar "server_maxpl", "Max players", "20"
 
 # TODO: server ports pool; klase Pool, Rules
@@ -198,7 +203,7 @@ addvar "server_maxpl", "Max players", "20"
 # TODO: u config datoteku trebaju ici i neki visi podatci, npr. Dozvoli prijavu Webom, Telnetom, ...
 
 unosvars()
-@varsfile = File.open "#{name}/vars.txt", 'w'
+@varsfile = File.open "#{options[:owner]}-#{name}/vars.txt", 'w'
 genvars()
 @varsfile.close
 info "vars.txt je generiran" if verbose?
@@ -217,12 +222,12 @@ cfg = template.result(
 )
 
 info "Generiram dedicated.cfg"
-File.open("#{name}/main/dedicated.cfg", 'w') do |f|
+File.open("#{options[:owner]}-#{name}/main/dedicated.cfg", 'w') do |f|
   f.puts cfg
 end
 
 # potvrda autenticnosti servera
-File.open("#{name}/.cod2server", 'a').close
+File.open("#{options[:owner]}-#{name}/.cod2server", 'a').close
 
 puts ":: Server je konfiguriran! ::"
 puts " - moze se pokrenuti sa `control start`"
