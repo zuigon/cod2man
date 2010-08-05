@@ -9,7 +9,7 @@ if [[ -e $1/.cod2server ]]; then
 else
 	if [[ $1 != "all" ]]; then
 		echo "pwd nije cod2 server !"
-		exit
+		exit 1
 	fi
 fi
 
@@ -59,7 +59,7 @@ status() {
 	fi
 }
 
-if [[ $1 -eq "all" ]]; then
+if [[ $1 == "all" ]]; then
 	# cd - 2>&1 > /dev/null
 	if [[ $2 == "status" ]]; then
 		for srv in *-*; do
@@ -72,8 +72,9 @@ if [[ $1 -eq "all" ]]; then
 		done
 	else
 		echo "Error"
-		exit
+		exit 1
 	fi
+	echo "Za 'all' moze samo 'status'"
 	exit
 fi
 
