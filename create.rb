@@ -18,11 +18,13 @@ optparse = OptionParser.new do |opts|
   options[:run_as] = nil
   options[:name] = nil
   options[:owner] = nil
+  options[:force] = false
 
   opts.on( '-v', '--verbose', 'Output more information' ) do options[:verbose] = true end
   opts.on( '-n', '--ime IME', 'Ime foldera za inst. (shortname)' ) do |s| options[:name] = s end
   opts.on( '-o', '--owner USERNAME', 'Owner username' ) do |s| options[:owner] = s end
   opts.on( '-t', '--template DIR', '' ) do |dir| options[:template_dir] = dir end
+  opts.on( '-f', '--force', 'Force creation if server already exists' ) do options[:force] = true end
   # opts.on( '-u', '--runas USER', '' ) do |user| options[:run_as] = user end
   # TODO: vars.txt opcije citati kroz options[]; umjesto addvar, ovdje
   opts.on( '-h', '--help', 'Display this' ) do puts opts; exit end
@@ -117,9 +119,11 @@ dir = `pwd | sed 's/.*\\///g'`.chop
 
 err "Ime sadrzi nedopustene znakove!" if name =~ /[^a-z0-9]/ or name =~ /[\.\/\\]/
 
-err "Trenutni dir nije hosting dir!" if !File.exist? "./cod2hosting"
+err "Trenutni dir nije hosting dir!" if !File.exist? "./.cod2hosting"
 # warn "vars.txt datoteka vec postoji i bit ce obrisana!" if File.exists? "./#{name}/vars.txt"
-err "server/folder imena '#{name}' vec postoji!" if File.directory? name
+if File.directory? "#{options[:owner]}-#{name}" and !options[:force]
+  err "server/folder imena #{options[:owner]}-'#{name}' vec postoji!"
+end
 err "Ime je prekratko!" if name.length < 3
 err "Ime je predugo!" if name.length > 10
 err "Nema template-a!" unless File.directory? 'template' or File.exists? 'template.tgz'
@@ -129,7 +133,7 @@ if template_dir
   info "creating new server (#{options[:owner]}-#{name}) from template ..."
   cmd = "cp -r template/ #{options[:owner]}-#{name}"
   if system cmd
-    if File.directory? name
+    if File.directory? "#{options[:owner]}-#{name}"
       info "Gotovo!"
     else err "nema foldera #{options[:owner]}-#{name}!" end
   else
@@ -222,7 +226,7 @@ cfg = template.result(
 )
 
 info "Generiram dedicated.cfg"
-File.open("#{options[:owner]}-#{name}/main/dedicated.cfg", 'w') do |f|
+File.open("#{options[:owner]}-#{name}/main/dedicated.cfg", 'w+') do |f|
   f.puts cfg
 end
 

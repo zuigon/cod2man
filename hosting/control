@@ -3,18 +3,21 @@
 # `control`
 # ! Mora biti u folderu servera, zajedno sa vars.txt i 
 
-if [ -e $1/.cod2server ]; then
+if [[ -e $1/.cod2server ]]; then
+	SRV_AUTHED=1
 	cd $1
 else
-	echo "pwd nije cod2 server !"
-	exit
+	if [[ $1 != "all" ]]; then
+		echo "pwd nije cod2 server !"
+		exit
+	fi
 fi
 
-. vars.txt 2>&1 > /dev/null || exit 1
+# . vars.txt 2>&1 > /dev/null || exit 1
 # sve varijable
 
 # SCREEN_NAME="cod2hosting-`pwd | sed 's/^.*\///g'`"
-SCREEN_NAME=cod2hosting-$1
+SCREEN_NAME="cod2hosting-$1"
 
 cod2pid() {
 	screen -wipe > /dev/null
@@ -28,7 +31,11 @@ start() {
 	else
 		echo "Starting COD2 server."
 		# ~/cod2/start
-		screen -A -m -d -c .screenrc -S $SCREEN_NAME -t cod2hosting ./cod2_exe
+		if [[ -e .screenrc ]]; then
+			screen -A -m -d -c .screenrc -S $SCREEN_NAME -t cod2hosting ./start
+		else
+			screen -A -m -d -S $SCREEN_NAME -t cod2hosting ./start
+		fi
 		sleep 2
 		cod2pid
 		echo "COD2 has started with PID of ${COD2}"
@@ -52,6 +59,23 @@ status() {
 	fi
 }
 
+if [[ $1 -eq "all" ]]; then
+	# cd - 2>&1 > /dev/null
+	if [[ $2 == "status" ]]; then
+		for srv in *-*; do
+			if [[ -e $srv/.cod2server ]]; then
+				SCREEN_NAME=cod2hosting-$srv
+				echo $srv
+				cod2pid
+				status
+			fi
+		done
+	else
+		echo "Error"
+		exit
+	fi
+	exit
+fi
 
 case "$2" in
 	start)

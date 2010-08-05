@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./cod2_exe | tee -a log__`date +"%Y_%m_%d-%H_%M_%S" | xargs echo`.txt
+
